@@ -10,6 +10,9 @@ COPY package*.json ./
 # Installer les dépendances
 RUN npm install
 
+# Installer axios
+RUN npm install axios
+
 # Copier le reste des fichiers de ton projet dans le conteneur
 COPY . .
 
