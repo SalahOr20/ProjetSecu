@@ -20,15 +20,7 @@ const Footer = () => {
             </ul>
           </div>
           
-          <div className="footer-section">
-            <h3>Catégories</h3>
-            <ul>
-              <li><Link to="/products">Football</Link></li>
-              <li><Link to="/products">Basketball</Link></li>
-              <li><Link to="/products">Running</Link></li>
-              <li><Link to="/products">Fitness</Link></li>
-            </ul>
-          </div>
+         
           
           <div className="footer-section">
             <h3>Contact</h3>
