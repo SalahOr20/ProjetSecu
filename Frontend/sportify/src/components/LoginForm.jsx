@@ -5,31 +5,71 @@ import { AuthContext } from '../context/AuthContext';
 const LoginForm = () => {
   const { login } = useContext(AuthContext);
   const [formData, setFormData] = useState({ email: '', password: '' });
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({...formData, [e.target.name]: e.target.value});
+    setError(''); // Clear error when user types
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
+    
     try {
       const res = await axios.post('http://localhost:8000/api/user/login/', formData);
       const { access, refresh } = res.data;
       const email = formData.email;
       login(email, { access, refresh });
-      alert('Connexion réussie');
     } catch (err) {
-      alert('Identifiants invalides');
+      setError('Identifiants invalides. Veuillez réessayer.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <div className="auth-form">
       <h2>Connexion</h2>
-      <input type="email" name="email" placeholder="Email" onChange={handleChange} required />
-      <input type="password" name="password" placeholder="Mot de passe" onChange={handleChange} required />
-      <button type="submit">Se connecter</button>
-    </form>
+      {error && <div className="message message-error">{error}</div>}
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="email" className="form-label">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            className="form-input"
+            placeholder="Entrez votre email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="password" className="form-label">Mot de passe</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            className="form-input"
+            placeholder="Entrez votre mot de passe"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <button 
+          type="submit" 
+          className="btn btn-primary"
+          disabled={loading}
+        >
+          {loading ? 'Connexion en cours...' : 'Se connecter'}
+        </button>
+      </form>
+    </div>
   );
 };
 
