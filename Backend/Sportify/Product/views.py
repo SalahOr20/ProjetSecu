@@ -9,14 +9,6 @@ from .serializer import ProductSerializer, OrderSerializer, OrderItemSerializer
 
 
 
-@api_view(['POST'])
-def create_product(request):
-    if request.method == 'POST':
-        serializer = ProductSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # Obtenir la liste des produits
 @api_view(['GET'])
@@ -94,3 +86,24 @@ def get_user_orders(request):
         order_data['order_items'] = order_items_serializer.data
 
     return Response(orders_serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def get_order_detail(request, order_id):
+    """Récupère le détail d'une commande spécifique pour l'utilisateur connecté"""
+    try:
+        order = Order.objects.get(id=order_id, user=request.user)
+    except Order.DoesNotExist:
+        return Response({'error': 'Commande non trouvée ou accès non autorisé'}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = OrderSerializer(order)
+    order_items = OrderItem.objects.filter(order=order)
+    order_items_serializer = OrderItemSerializer(order_items, many=True)
+
+    response_data = serializer.data
+    response_data['order_items'] = order_items_serializer.data
+
+    return Response(response_data, status=status.HTTP_200_OK)
+

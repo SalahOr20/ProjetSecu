@@ -87,7 +87,7 @@ DATABASES = {
         'NAME': 'sportify',
         'USER': 'root',
         'PASSWORD': '',
-        'HOST': 'db',
+        'HOST': 'localhost',
         'PORT': '3306',
     }
 }
