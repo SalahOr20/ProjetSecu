@@ -7,6 +7,7 @@ import ProductList from './components/ProductList';
 import ProductDetail from './components/ProductDetail';
 import Cart from './components/Cart';
 import OrderHistory from './components/OrderHistory';
+import OrderDetail from './components/OrderDetail'; // ✅ import du composant OrderDetail
 import Footer from './components/Footer';
 import { AuthContext } from './context/AuthContext';
 import './App.css';
@@ -51,6 +52,7 @@ function App() {
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/orders" element={<OrderHistory />} />
+            <Route path="/orders/:orderId" element={<OrderDetail />} /> {/* ✅ nouvelle route */}
           </Routes>
         </main>
 

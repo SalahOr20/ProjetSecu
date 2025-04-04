@@ -32,7 +32,7 @@ const OrderHistory = () => {
           }
         });
         setOrders(res.data);
-        
+
         // Récupérer les détails des produits pour chaque commande
         const productIds = new Set();
         res.data.forEach(order => {
@@ -40,17 +40,17 @@ const OrderHistory = () => {
             productIds.add(item.product);
           });
         });
-        
-        const productPromises = Array.from(productIds).map(id => 
+
+        const productPromises = Array.from(productIds).map(id =>
           axios.get(`http://localhost:8000/api/products/${id}/`)
         );
-        
+
         const productResponses = await Promise.all(productPromises);
         const productsData = {};
         productResponses.forEach(res => {
           productsData[res.data.id] = res.data;
         });
-        
+
         setProducts(productsData);
       } catch (err) {
         setError('Erreur lors du chargement des commandes. Veuillez réessayer plus tard.');
@@ -112,43 +112,47 @@ const OrderHistory = () => {
   return (
     <div className="container">
       <h1 className="page-title">Historique des commandes</h1>
-      
+
       {orders.map(order => (
-        <div key={order.id} className="order-card">
-          <div className="order-header">
-            <div>
-              <span className="order-id">Commande #{order.id}</span>
-              <span className="order-date">{formatDate(order.created_at)}</span>
+        <Link
+          to={`/orders/${order.id}`}
+          key={order.id}
+          className="order-card-link"
+          style={{ textDecoration: 'none', color: 'inherit' }}
+        >
+          <div className="order-card">
+            <div className="order-header">
+              <div>
+                <span className="order-id">Commande #{order.id}</span>
+                <span className="order-date">{formatDate(order.created_at)}</span>
+              </div>
+              <span className="order-status order-status-completed">Livrée</span>
             </div>
-            <span className="order-status order-status-completed">Livrée</span>
-          </div>
-          <div className="order-items">
-            {order.order_items.map(item => {
-              const product = products[item.product];
-              if (!product) return null;
-              
-              return (
-                <div key={item.id} className="order-item">
-                  <img 
-                    src={product.image || 'https://via.placeholder.com/80x80?text=Produit'} 
-                    alt={product.name}
-                  />
-                  <div className="order-item-details">
-                    <h3 className="order-item-title">{product.name}</h3>
-                    <p>Quantité: {item.quantity}</p>
+            <div className="order-items">
+              {order.order_items.map(item => {
+                const product = products[item.product];
+                if (!product) return null;
+
+                return (
+                  <div key={item.id} className="order-item">
+                    
+                    <div className="order-item-details">
+                      <h3 className="order-item-title">{product.name}</h3>
+                      <p>Quantité: {item.quantity}</p>
+                    </div>
+                    <div className="order-item-price">
+                      {(product.price * item.quantity).toFixed(2)} €
+                    </div>
                   </div>
-                  <div className="order-item-price">
-                    {(product.price * item.quantity).toFixed(2)} €
-                  </div>
-                </div>
-              );
-            })}
-            <div className="order-total">
-              <span>Total</span>
-              <span>{order.total_price} €</span>
+                );
+              })}
+              <div className="order-total">
+                <span>Total</span>
+                <span>{order.total_price} €</span>
+              </div>
             </div>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );
